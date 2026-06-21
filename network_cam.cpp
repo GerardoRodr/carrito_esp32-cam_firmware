@@ -45,6 +45,12 @@ void initWiFi() {
     }
     Serial.println("");
     Serial.println("WiFi conectado exitosamente.");
+
+    // --- MEJORA DE LATENCIA ---
+    // Desactivar el ahorro de energía del Wi-Fi para evitar latencia de 100-300ms
+    // en la recepción de paquetes HTTP cuando la antena entra en modo reposo.
+    WiFi.setSleep(false);
+
     Serial.print("IP del Carrito: ");
     Serial.println(WiFi.localIP());
 

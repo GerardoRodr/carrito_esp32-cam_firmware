@@ -63,6 +63,12 @@ static esp_err_t stream_handler(httpd_req_t *req) {
         if (res != ESP_OK) {
             break;
         }
+
+        // --- MEJORA DE LATENCIA ---
+        // Ceder el control al procesador por 15ms. 
+        // Esto permite que las peticiones de los motores (puerto 80) se procesen instantáneamente
+        // sin que el streaming acapare el 100% del Wi-Fi y el CPU.
+        vTaskDelay(pdMS_TO_TICKS(15));
     }
     return res;
 }
@@ -127,8 +133,12 @@ void startServers() {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     
     // 1. INICIAR SERVIDOR DE CONTROL (PUERTO 80)
+    // --- MEJORA DE LATENCIA ---
+    // Le damos alta prioridad y lo anclamos al núcleo 1 (donde corre Arduino por defecto)
     config.server_port = 80;
     config.ctrl_port = 80;
+    config.task_priority = tskIDLE_PRIORITY + 6; 
+    config.core_id = 1;
     if (httpd_start(&control_httpd, &config) == ESP_OK) {
         httpd_uri_t uri_adelante = { .uri = "/adelante", .method = HTTP_GET, .handler = cmd_adelante_handler, .user_ctx = NULL };
         httpd_uri_t uri_atras = { .uri = "/atras", .method = HTTP_GET, .handler = cmd_atras_handler, .user_ctx = NULL };
@@ -148,8 +158,12 @@ void startServers() {
     }
 
     // 2. INICIAR SERVIDOR DE STREAMING (PUERTO 81)
+    // --- MEJORA DE LATENCIA ---
+    // Menor prioridad para evitar inanición de otras tareas y anclado al núcleo 0
     config.server_port = 81;
     config.ctrl_port = 81;
+    config.task_priority = tskIDLE_PRIORITY + 4;
+    config.core_id = 0;
     if (httpd_start(&stream_httpd, &config) == ESP_OK) {
         httpd_uri_t uri_stream = { .uri = "/stream", .method = HTTP_GET, .handler = stream_handler, .user_ctx = NULL };
         httpd_register_uri_handler(stream_httpd, &uri_stream);

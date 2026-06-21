@@ -106,3 +106,11 @@ function cambiarVelocidad(valor) {
 }
 ```
 *Nota frontend:* El cambio de velocidad (`/velocidad?v=X`) se aplica instantáneamente. Es decir, si el carrito está actualmente avanzando hacia adelante y mueves el slider, el carrito ajustará su velocidad automáticamente sin necesidad de que vuelvas a llamar a `fetch('/adelante')`.
+
+## Rendimiento y Latencia
+
+El firmware incorpora optimizaciones profundas para garantizar que las peticiones a los motores tengan precedencia absoluta, alcanzando latencias menores a 20-50ms en la red local. Si experimentas retrasos, asegúrate de:
+1. Utilizar conexiones HTTP Keep-Alive en el Frontend (como añadir `{ keepalive: true }` en tus peticiones `fetch`).
+2. Usar `requests.Session()` en lugar de llamadas aisladas de `requests.get()` en Python.
+
+Para conocer más a detalle la arquitectura concurrente y las mejoras aplicadas al ESP32 (núcleos, prioridades, Wi-Fi), consulta el archivo [optimizaciones.md](optimizaciones.md).
