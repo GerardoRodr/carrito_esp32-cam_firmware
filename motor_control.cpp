@@ -9,7 +9,7 @@ const int IN4 = 2;
 // Configuración PWM
 const int pwmFreq = 5000;     
 const int pwmResolution = 8;  
-int pwmVelocidad = 255; 
+int pwmVelocidad = 100; 
 
 // Estado actual del movimiento
 enum EstadoMovimiento { PARADO, ADELANTE, ATRAS, IZQ, DER };

@@ -15,6 +15,7 @@ static const char* _STREAM_BOUNDARY = "\r\n--" PART_BOUNDARY "\r\n";
 static const char* _STREAM_PART = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
 static esp_err_t stream_handler(httpd_req_t *req) {
+    Serial.println("[HTTP] Cliente conectado al stream de video (/stream)");
     camera_fb_t * fb = NULL;
     esp_err_t res = ESP_OK;
     size_t _jpg_buf_len;
@@ -68,30 +69,35 @@ static esp_err_t stream_handler(httpd_req_t *req) {
 
 // --- HANDLERS DE CONTROL DE MOTORES ---
 static esp_err_t cmd_adelante_handler(httpd_req_t *req) {
+    Serial.println("[HTTP] Comando recibido: /adelante");
     adelante();
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
 }
 
 static esp_err_t cmd_atras_handler(httpd_req_t *req) {
+    Serial.println("[HTTP] Comando recibido: /atras");
     atras();
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
 }
 
 static esp_err_t cmd_izquierda_handler(httpd_req_t *req) {
+    Serial.println("[HTTP] Comando recibido: /izquierda");
     izquierda();
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
 }
 
 static esp_err_t cmd_derecha_handler(httpd_req_t *req) {
+    Serial.println("[HTTP] Comando recibido: /derecha");
     derecha();
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
 }
 
 static esp_err_t cmd_parar_handler(httpd_req_t *req) {
+    Serial.println("[HTTP] Comando recibido: /parar");
     parar();
     httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
     return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
@@ -105,6 +111,8 @@ static esp_err_t cmd_velocidad_handler(httpd_req_t *req) {
             char value[16];
             if (httpd_query_key_value(buf, "v", value, sizeof(value)) == ESP_OK) {
                 int val = atoi(value);
+                Serial.print("[HTTP] Cambio de velocidad recibido: ");
+                Serial.println(val);
                 setVelocidad(val);
             }
         }
