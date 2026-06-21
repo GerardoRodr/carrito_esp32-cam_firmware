@@ -12,6 +12,9 @@ extern const int IN4;
 // Inicializa los pines y PWM
 void initMotors();
 
+// Configurar velocidad (0 - 255)
+void setVelocidad(int v);
+
 // Funciones de movimiento
 void adelante();
 void atras();

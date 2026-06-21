@@ -81,7 +81,7 @@ bool initCamera() {
     config.pixel_format = PIXFORMAT_JPEG; 
     
     // Configuración para latencia baja y streaming MJPEG
-    config.frame_size = FRAMESIZE_QVGA; // Resolución de 320x240
+    config.frame_size = FRAMESIZE_QVGA; // Resolución de 320x240 en QVGA Y 640X480 en VGA
     config.jpeg_quality = 12; // Calidad aceptable para visión artificial externa sin mucho lag
     config.fb_count = 1;
 

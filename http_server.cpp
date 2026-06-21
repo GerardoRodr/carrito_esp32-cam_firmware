@@ -97,6 +97,23 @@ static esp_err_t cmd_parar_handler(httpd_req_t *req) {
     return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
 }
 
+static esp_err_t cmd_velocidad_handler(httpd_req_t *req) {
+    size_t buf_len = httpd_req_get_url_query_len(req) + 1;
+    if (buf_len > 1) {
+        char *buf = (char *)malloc(buf_len);
+        if (httpd_req_get_url_query_str(req, buf, buf_len) == ESP_OK) {
+            char value[16];
+            if (httpd_query_key_value(buf, "v", value, sizeof(value)) == ESP_OK) {
+                int val = atoi(value);
+                setVelocidad(val);
+            }
+        }
+        free(buf);
+    }
+    httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
+    return httpd_resp_send(req, "OK", HTTPD_RESP_USE_STRLEN);
+}
+
 // --- CONFIGURACIÓN DE LOS SERVIDORES ---
 void startServers() {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
@@ -110,12 +127,14 @@ void startServers() {
         httpd_uri_t uri_izquierda = { .uri = "/izquierda", .method = HTTP_GET, .handler = cmd_izquierda_handler, .user_ctx = NULL };
         httpd_uri_t uri_derecha = { .uri = "/derecha", .method = HTTP_GET, .handler = cmd_derecha_handler, .user_ctx = NULL };
         httpd_uri_t uri_parar = { .uri = "/parar", .method = HTTP_GET, .handler = cmd_parar_handler, .user_ctx = NULL };
+        httpd_uri_t uri_velocidad = { .uri = "/velocidad", .method = HTTP_GET, .handler = cmd_velocidad_handler, .user_ctx = NULL };
 
         httpd_register_uri_handler(control_httpd, &uri_adelante);
         httpd_register_uri_handler(control_httpd, &uri_atras);
         httpd_register_uri_handler(control_httpd, &uri_izquierda);
         httpd_register_uri_handler(control_httpd, &uri_derecha);
         httpd_register_uri_handler(control_httpd, &uri_parar);
+        httpd_register_uri_handler(control_httpd, &uri_velocidad);
         
         Serial.println("Servidor de control iniciado en el puerto 80");
     }
