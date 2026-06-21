@@ -2,9 +2,16 @@
 #include <WiFi.h>
 #include "esp_camera.h"
 
-// --- CONFIGURACION WIFI AP ---
-const char* ssid = "ESP32_Carrito_Vision";
-const char* password = "password123";
+// --- CONFIGURACION WIFI ---
+// Descomenta el bloque correspondiente según el modo que desees usar:
+
+// MODO LOCAL (Station) - Conectarse a tu router
+const char* ssid = "TPL_XRKS_2,4";
+const char* password = "YwEmJD2Cbl";
+
+// MODO ACCESS POINT (AP) - Crear su propia red
+// const char* ssid = "ESP32_Carrito_Vision";
+// const char* password = "password123";
 
 // ==========================================
 // CONFIGURACIÓN DE PINES DE LA CÁMARA (Modelo AI-Thinker)
@@ -27,10 +34,26 @@ const char* password = "password123";
 #define PCLK_GPIO_NUM     22
 
 void initWiFi() {
-    Serial.println("Configurando Access Point WiFi...");
-    WiFi.softAP(ssid, password);
-    Serial.print("IP del Carrito (AP): ");
-    Serial.println(WiFi.softAPIP());
+    // --- MODO LOCAL (Station) ---
+    Serial.print("Conectando a la red WiFi: ");
+    Serial.println(ssid);
+    WiFi.begin(ssid, password);
+
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("");
+    Serial.println("WiFi conectado exitosamente.");
+    Serial.print("IP del Carrito: ");
+    Serial.println(WiFi.localIP());
+
+    // --- MODO ACCESS POINT (AP) ---
+    // (Para volver a usar AP, debemos comentar el bloque "MODO LOCAL" de arriba y descomentar este xd)
+    // Serial.println("Configurando Access Point WiFi...");
+    // WiFi.softAP(ssid, password);
+    // Serial.print("IP del Carrito (AP): ");
+    // Serial.println(WiFi.softAPIP());
 }
 
 bool initCamera() {
